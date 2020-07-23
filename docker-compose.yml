@@ -8,4 +8,22 @@ services:
             - 9042:9042 # native protocol clients
         volumes:
             - ./cdata:/var/lib/cassandra
-        
+        environment:
+            - "MAX_HEAP_SIZE=256M"
+            - "HEAP_NEWSIZE=128M"
+        restart: always
+  
+    cassandra-load-keyspace:
+        container_name: assandra-load-keyspace
+        image: cassandra:3.11.6
+        depends_on:
+            - cassandra
+        volumes:
+            - ./cassandra-ddl/cassandra.cql:/cassandra.cql
+        command: /bin/bash -c "sleep 60 && echo loading cassandra keyspace && cqlsh cassandra -f /cassandra.cql"
+        deploy:
+            restart_policy:
+            condition: on-failure
+            delay: 5s
+            max_attempts: 3
+            window: 120s
