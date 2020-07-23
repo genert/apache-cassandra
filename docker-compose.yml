@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+    cassandra:
+        container_name: cassandra
+        image: cassandra:3.11.6
+        ports:
+            - 9042:9042 # native protocol clients
+        volumes:
+            - ./cdata:/var/lib/cassandra
+        
